@@ -1,28 +1,30 @@
 import type { Metadata } from "next";
 import { PageTransition } from "@/components/common/PageTransition";
-import { Github, Linkedin, Twitter, Mail, ArrowRight } from "lucide-react";
+import { Github, Linkedin, Twitter, Mail } from "lucide-react";
+// import { PERSON, SOCIALS } from "@/lib/constants";
+import { PERSON, SOCIALS } from "@/lib/constans";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn more about Soham Chatterjee — Full Stack Developer, builder, and problem solver.",
+  description: `Learn more about ${PERSON.name} — Full Stack Developer, builder, and problem solver.`,
 };
 
 const experiences = [
   {
     role: "Full Stack Developer",
     company: "Freelance",
-    period: "2023 — Present",
+    period: "2021 — Present",
     description:
-      "Building full-stack web applications for startups and founders. Specializing in MERN stack, Next.js, and AWS deployments. Delivered 10+ production apps.",
-    techs: ["Next.js", "React", "Node.js", "MongoDB", "AWS"],
+      "Building full-stack web applications for startups and founders. Specializing in MERN stack, Next.js, and AWS deployments. Delivered 10+ production apps across various industries.",
+    techs: ["Next.js", "React", "Node.js", "MongoDB", "AWS", "TypeScript"],
   },
   {
-    role: "Frontend Developer Intern",
-    company: "TechStartup Pvt Ltd",
-    period: "2022 — 2023",
+    role: "Frontend Developer",
+    company: "Contract Projects",
+    period: "2020 — 2021",
     description:
-      "Built responsive UI components, improved Core Web Vitals by 40%, and worked closely with designers to implement pixel-perfect interfaces.",
-    techs: ["React", "TypeScript", "Tailwind CSS"],
+      "Built responsive UI components, improved Core Web Vitals scores, and worked closely with designers to implement pixel-perfect interfaces for multiple clients.",
+    techs: ["React", "TypeScript", "Tailwind CSS", "Framer Motion"],
   },
 ];
 
@@ -33,6 +35,13 @@ const education = [
     period: "2020 — 2024",
     description: "Focused on algorithms, data structures, web development, and distributed systems.",
   },
+];
+
+const socials = [
+  { icon: Github, label: "GitHub", href: SOCIALS.github },
+  { icon: Linkedin, label: "LinkedIn", href: SOCIALS.linkedin },
+  { icon: Twitter, label: "Twitter", href: SOCIALS.twitter },
+  { icon: Mail, label: PERSON.email, href: `mailto:${PERSON.email}` },
 ];
 
 export default function AboutPage() {
@@ -46,11 +55,26 @@ export default function AboutPage() {
             About Me
           </p>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Hey, I&apos;m Soham 👋
+            Hey, I&apos;m {PERSON.firstName} 👋
           </h1>
+
+          {/* Stats */}
+          <div className="flex items-center gap-8 mb-8 pb-8 border-b border-border">
+            {[
+              { value: PERSON.yearsExp, label: "Years of experience" },
+              { value: PERSON.projectsShipped, label: "Projects shipped" },
+              { value: "5+", label: "Happy clients" },
+            ].map((stat, i) => (
+              <div key={stat.label} className={i !== 2 ? "border-r border-border pr-8" : ""}>
+                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-xs text-foreground/40 mt-0.5">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="space-y-4 text-foreground/60 leading-relaxed">
             <p>
-              I&apos;m a full-stack developer based in India, passionate about building
+              I&apos;m a full-stack developer based in {PERSON.location}, passionate about building
               products that make people&apos;s lives easier. I specialize in the MERN
               stack and love working with modern tools like Next.js, TypeScript, and AWS.
             </p>
@@ -68,19 +92,9 @@ export default function AboutPage() {
 
           {/* Socials */}
           <div className="flex flex-wrap gap-3 mt-8">
-            {[
-              { icon: Github, label: "GitHub", href: "https://github.com/sohamchatterjee" },
-              { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/in/sohamchatterjee" },
-              { icon: Twitter, label: "Twitter", href: "https://x.com/sohamchatterjee" },
-              { icon: Mail, label: "Email", href: "mailto:hello@soham.codes" },
-            ].map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-all"
-              >
+            {socials.map((s) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-all">
                 <s.icon size={15} />
                 {s.label}
               </a>
@@ -106,15 +120,10 @@ export default function AboutPage() {
                     {exp.period}
                   </span>
                 </div>
-                <p className="text-sm text-foreground/50 leading-relaxed mb-3">
-                  {exp.description}
-                </p>
+                <p className="text-sm text-foreground/50 leading-relaxed mb-3">{exp.description}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {exp.techs.map((tech) => (
-                    <span
-                      key={tech}
-                      className="text-xs px-2 py-0.5 rounded-md bg-muted text-foreground/50"
-                    >
+                    <span key={tech} className="text-xs px-2 py-0.5 rounded-md bg-muted text-foreground/50">
                       {tech}
                     </span>
                   ))}
@@ -142,9 +151,7 @@ export default function AboutPage() {
                     {edu.period}
                   </span>
                 </div>
-                <p className="text-sm text-foreground/50 leading-relaxed">
-                  {edu.description}
-                </p>
+                <p className="text-sm text-foreground/50 leading-relaxed">{edu.description}</p>
               </div>
             ))}
           </div>

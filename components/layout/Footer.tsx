@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Github, Linkedin, Twitter, Mail } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { PERSON, SOCIALS } from "@/lib/constans";
 
 const footerLinks = [
   {
@@ -25,33 +26,31 @@ const footerLinks = [
 ];
 
 const socials = [
-  { icon: Github, href: "https://github.com/sohamchatterjee", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com/in/sohamchatterjee", label: "LinkedIn" },
-  { icon: Twitter, href: "https://x.com/sohamchatterjee", label: "Twitter" },
-  { icon: Mail, href: "mailto:hello@soham.codes", label: "Email" },
+  { icon: Github, href: SOCIALS.github, label: "GitHub" },
+  { icon: Linkedin, href: SOCIALS.linkedin, label: "LinkedIn" },
+  { icon: Twitter, href: SOCIALS.twitter, label: "Twitter" },
+  { icon: Mail, href: SOCIALS.email, label: "Email" },
 ];
 
 export function Footer() {
   return (
     <footer className="border-t border-border mt-20">
       <div className="max-w-6xl mx-auto px-6 py-14">
-
-        {/* Top row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <svg width="32" height="20" viewBox="0 0 130 60" fill="none">
                 <path d="M10 15 H40 C50 15 50 30 40 30 H20 C10 30 10 45 20 45 H50"
-                  stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" className="text-foreground" />
+                  stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                 <path d="M60 15 V45 M80 15 V45 M60 30 H80"
-                  stroke="currentColor" strokeWidth="5" strokeLinecap="round" fill="none" className="text-foreground" />
+                  stroke="currentColor" strokeWidth="5" strokeLinecap="round" fill="none" />
                 <path d="M95 45 V15 L110 35 L125 15 V45"
-                  stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" className="text-foreground" />
+                  stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </svg>
-              <span className="font-semibold text-foreground">Soham Chatterjee</span>
+              <span className="font-semibold text-foreground">{PERSON.name}</span>
             </div>
             <p className="text-sm text-foreground/45 max-w-xs leading-relaxed">
-              Full Stack Developer from Kolkata, India. Building fast, scalable web products.
+              Full Stack Developer from {PERSON.location}. Building fast, scalable web products.
             </p>
             <div className="flex items-center gap-2 mt-4">
               {socials.map((s) => (
@@ -79,17 +78,15 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Bottom bar — ThemeToggle here too */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-border">
           <p className="text-xs text-foreground/30">
-            © {new Date().getFullYear()} Soham Chatterjee · Built with Next.js · Deployed on AWS
+            © {new Date().getFullYear()} {PERSON.name} · Built with Next.js · Deployed on AWS
           </p>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <span className="text-xs text-foreground/20 font-mono">নমস্কার 🙏</span>
+            <span className="text-xs text-foreground/20 font-mono">{PERSON.greeting} 🙏</span>
           </div>
         </div>
-
       </div>
     </footer>
   );
