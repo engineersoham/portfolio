@@ -11,45 +11,8 @@ export default function GuestbookPage() {
   const [form, setForm] = useState({ name: "", message: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  const fetchEntries = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guestbook`);
-      const data = await res.json();
-      setEntries(data);
-    } catch {
-      console.error("Failed to fetch guestbook entries");
-    }
-  };
-
-  // useEffect(() => {
-  //   fetchEntries();
-  // }, []);
-  useEffect(() => {
-    // Backend not connected yet — will be live after deployment
-    setLoading(false);
-  }, []);
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setStatus("loading");
-  //   try {
-  //     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guestbook`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(form),
-  //     });
-  //     if (res.ok) {
-  //       setStatus("success");
-  //       setForm({ name: "", message: "" });
-  //       fetchEntries();
-  //       setTimeout(() => setStatus("idle"), 3000);
-  //     } else {
-  //       setStatus("error");
-  //     }
-  //   } catch {
-  //     setStatus("error");
-  //   }
-  // };
+  // Backend not connected yet — will be live after deployment
+  useEffect(() => {}, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +21,7 @@ export default function GuestbookPage() {
     setForm({ name: "", message: "" });
     setTimeout(() => setStatus("idle"), 3000);
   };
+
   return (
     <PageTransition>
       <div className="max-w-2xl mx-auto px-6 pt-32 pb-20">
@@ -151,8 +115,4 @@ export default function GuestbookPage() {
       </div>
     </PageTransition>
   );
-}
-
-function setLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
 }
