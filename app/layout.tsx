@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { GlobalModal } from "@/components/common/GlobalModal";
 import "./globals.css";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <Providers>
         <ThemeProvider>
           {/*
             ── Full-site background stack (fixed, behind everything) ──
@@ -115,6 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </SmoothScroll>
           </div>
         </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

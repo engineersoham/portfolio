@@ -1,25 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send } from "lucide-react";
 import { PageTransition } from "@/components/common/PageTransition";
+import { useGuestbook, usePostGuestbook } from "@/lib/queries/guestbook";
 import type { GuestbookEntry } from "@/types";
 
 export default function GuestbookPage() {
-  const [entries, setEntries] = useState<GuestbookEntry[]>([]);
   const [form, setForm] = useState({ name: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const { data, isLoading } = useGuestbook();
+  const { mutate: postEntry, isPending, isSuccess, reset } = usePostGuestbook();
 
-  // Backend not connected yet — will be live after deployment
-  useEffect(() => {}, []);
+  const entries: GuestbookEntry[] = data?.data ?? [];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Will be connected to backend soon
-    setStatus("success");
-    setForm({ name: "", message: "" });
-    setTimeout(() => setStatus("idle"), 3000);
+    postEntry(form, {
+      onSuccess: () => {
+        setForm({ name: "", message: "" });
+        setTimeout(() => reset(), 3000);
+      },
+    });
   };
 
   return (
@@ -59,15 +61,15 @@ export default function GuestbookPage() {
           <div className="flex items-center justify-between">
             <motion.button
               type="submit"
-              disabled={status === "loading"}
+              disabled={isPending || isSuccess}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-foreground text-background text-sm font-semibold hover:opacity-80 transition-opacity disabled:opacity-50 cursor-pointer"
             >
               <Send size={14} />
-              {status === "loading" ? "Posting..." : "Post Message"}
+              {isPending ? "Posting..." : "Post Message"}
             </motion.button>
-            {status === "success" && (
+            {isSuccess && (
               <p className="text-sm text-green-500">Posted! 🎉</p>
             )}
           </div>
@@ -78,39 +80,43 @@ export default function GuestbookPage() {
           <p className="text-xs font-mono text-foreground/30 uppercase tracking-widest mb-2">
             {entries.length} Messages
           </p>
-          <AnimatePresence>
-            {entries.length === 0 ? (
-              <p className="text-foreground/30 text-sm text-center py-12">
-                No messages yet. Be the first! 🌟
-              </p>
-            ) : (
-              entries.map((entry) => (
-                <motion.div
-                  key={entry._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-4 p-4 rounded-2xl border border-border bg-card/30"
-                >
-                  <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-foreground/60 shrink-0">
-                    {entry.name[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-semibold text-foreground">{entry.name}</p>
-                      <p className="text-xs text-foreground/30">
-                        {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </p>
+          {isLoading ? (
+            <p className="text-foreground/30 text-sm text-center py-12">Loading...</p>
+          ) : (
+            <AnimatePresence>
+              {entries.length === 0 ? (
+                <p className="text-foreground/30 text-sm text-center py-12">
+                  No messages yet. Be the first! 🌟
+                </p>
+              ) : (
+                entries.map((entry) => (
+                  <motion.div
+                    key={entry._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex gap-4 p-4 rounded-2xl border border-border bg-card/30"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-foreground/60 shrink-0">
+                      {entry.name[0].toUpperCase()}
                     </div>
-                    <p className="text-sm text-foreground/60">{entry.message}</p>
-                  </div>
-                </motion.div>
-              ))
-            )}
-          </AnimatePresence>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm font-semibold text-foreground">{entry.name}</p>
+                        <p className="text-xs text-foreground/30">
+                          {new Date(entry.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                      <p className="text-sm text-foreground/60">{entry.message}</p>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+          )}
         </div>
       </div>
     </PageTransition>
