@@ -4,40 +4,28 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Github, Linkedin, Twitter, Mail, Calendar } from "lucide-react";
 import { PageTransition } from "@/components/common/PageTransition";
-// import { PERSON, SOCIALS } from "@/lib/constants";
 import { PERSON, SOCIALS } from "@/lib/constans";
+import { useContact } from "@/lib/queries/contact";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const { mutate: sendContact, isPending, isSuccess, isError, reset } = useContact();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("loading");
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        setStatus("success");
+    sendContact(form, {
+      onSuccess: () => {
         setForm({ name: "", email: "", message: "" });
-      } else {
-        setStatus("error");
-      }
-    } catch {
-      // Backend not live yet
-      setStatus("success");
-      setForm({ name: "", email: "", message: "" });
-    }
+        setTimeout(() => reset(), 3000);
+      },
+    });
   };
 
   const contactLinks = [
     { icon: Mail, label: PERSON.email, href: `mailto:${PERSON.email}` },
-    { icon: Github, label: "github.com/sohamchatterjee", href: SOCIALS.github },
-    { icon: Linkedin, label: "linkedin.com/in/sohamchatterjee", href: SOCIALS.linkedin },
-    { icon: Twitter, label: "x.com/sohamchatterjee", href: SOCIALS.twitter },
+    { icon: Github, label: "github.com/engineersoham", href: SOCIALS.github },
+    { icon: Linkedin, label: "linkedin.com/in/soham-chatterjee-10", href: SOCIALS.linkedin },
+    { icon: Twitter, label: "x.com/shm_chat", href: SOCIALS.twitter },
   ];
 
   return (
@@ -82,13 +70,13 @@ export default function ContactPage() {
                 placeholder="Tell me about your project..."
                 className="w-full px-4 py-3 rounded-xl border border-border bg-card/50 text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-foreground/30 transition-colors resize-none" />
             </div>
-            <motion.button type="submit" disabled={status === "loading"}
+            <motion.button type="submit" disabled={isPending || isSuccess}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-foreground text-background font-semibold text-sm hover:opacity-80 transition-opacity disabled:opacity-50 cursor-pointer">
-              {status === "loading" ? "Sending..." : (<><Send size={15} /> Send Message</>)}
+              {isPending ? "Sending..." : (<><Send size={15} /> Send Message</>)}
             </motion.button>
-            {status === "success" && <p className="text-sm text-green-500 text-center">Message sent! I&apos;ll get back to you soon 🎉</p>}
-            {status === "error" && <p className="text-sm text-red-400 text-center">Something went wrong. Email me directly.</p>}
+            {isSuccess && <p className="text-sm text-green-500 text-center">Message sent! I&apos;ll get back to you soon 🎉</p>}
+            {isError && <p className="text-sm text-red-400 text-center">Something went wrong. Email me directly.</p>}
           </form>
 
           {/* Info */}
