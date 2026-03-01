@@ -45,7 +45,7 @@ export const useLogout = () => {
 
 // ── Contact Messages ──────────────────────────────────────────────────────────
 
-export const useAdminMessages = () =>
+export const useAdminMessages = (enabled = true) =>
   useQuery({
     queryKey: ["admin-messages"],
     queryFn: async () => {
@@ -53,6 +53,8 @@ export const useAdminMessages = () =>
       if (!res.ok) throw new Error("Failed to fetch messages");
       return res.json();
     },
+    enabled,
+    retry: false,
   });
 
 export const useMarkAsRead = () => {
@@ -87,7 +89,7 @@ export const useAdminDeleteGuestbook = () => {
 
 // ── Projects ──────────────────────────────────────────────────────────────────
 
-export const useAdminProjects = () =>
+export const useAdminProjects = (enabled = true) =>
   useQuery({
     queryKey: ["admin-projects"],
     queryFn: async () => {
@@ -95,6 +97,8 @@ export const useAdminProjects = () =>
       if (!res.ok) throw new Error("Failed to fetch projects");
       return res.json();
     },
+    enabled,
+    retry: false,
   });
 
 export const useCreateProject = () => {
@@ -145,7 +149,7 @@ export const useDeleteProject = () => {
 
 // ── Testimonials ──────────────────────────────────────────────────────────────
 
-export const useAdminTestimonials = () =>
+export const useAdminTestimonials = (enabled = true) =>
   useQuery({
     queryKey: ["admin-testimonials"],
     queryFn: async () => {
@@ -153,6 +157,8 @@ export const useAdminTestimonials = () =>
       if (!res.ok) throw new Error("Failed to fetch testimonials");
       return res.json();
     },
+    enabled,
+    retry: false,
   });
 
 export const useSendInvite = () => {
