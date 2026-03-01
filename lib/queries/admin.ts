@@ -2,46 +2,58 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const authFetch = (url: string, options?: RequestInit) =>
-  fetch(url, { ...options, credentials: "include" });
+const authFetch = (url: string, options?: RequestInit) => {
+  const token = localStorage.getItem("admin_token");
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+};
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 export const useLogin = () =>
   useMutation({
-    mutationFn: async (data: { email: string; password: string }) => {
-      const res = await authFetch(`${API_URL}/api/auth/login`, {
+    mutationFn: async (data: { email: string; password: string; rememberMe: boolean }) => {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Invalid credentials");
-      return res.json();
+      const json = await res.json();
+      if (json.token) localStorage.setItem("admin_token", json.token);
+      return json;
     },
   });
 
-export const useMe = () =>
-  useQuery({
-    queryKey: ["me"],
-    queryFn: async () => {
-      const res = await authFetch(`${API_URL}/api/auth/me`);
-      if (!res.ok) throw new Error("Not authenticated");
-      return res.json();
-    },
-    retry: false,
-  });
+  export const useMe = () =>
+    useQuery({
+      queryKey: ["me"],
+      queryFn: async () => {
+        const token = localStorage.getItem("admin_token");
+        if (!token) throw new Error("Not authenticated");
+        const res = await authFetch(`${API_URL}/api/auth/me`);
+        if (!res.ok) throw new Error("Not authenticated");
+        return res.json();
+      },
+      retry: false,
+    });
 
-export const useLogout = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async () => {
-      await authFetch(`${API_URL}/api/auth/logout`, { method: "POST" });
-    },
-    onSuccess: () => {
-      queryClient.clear();
-    },
-  });
-};
+  export const useLogout = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: async () => {
+        localStorage.removeItem("admin_token");
+      },
+      onSuccess: () => {
+        queryClient.clear();
+      },
+    });
+  };
 
 // ── Contact Messages ──────────────────────────────────────────────────────────
 
