@@ -5,18 +5,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Mail, Send, Linkedin, Github, Twitter } from "lucide-react";
 import { PERSON, SOCIALS } from "@/lib/constans";
 import { useContact } from "@/lib/queries/contact";
+import Cal, { getCalApi } from "@calcom/embed-react";
+import { useEffect } from "react";
 
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type Tab = "book" | "message";
+type Tab = "idle" | "cal" | "message";
 
 export function ContactModal({ isOpen, onClose }: ContactModalProps) {
-  const [tab, setTab] = useState<Tab>("book");
+  const [tab, setTab] = useState<Tab>("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const { mutate: sendContact, isPending, isSuccess, isError, reset } = useContact();
+
+  useEffect(() => {
+    (async function () {
+      const cal = await getCalApi({ namespace: "30min" });
+      cal("ui", { hideEventTypeDetails: false, layout: "month_view" });
+    })();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,8 +79,11 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
               <div className="px-6 pb-6">
                 {/* Two option cards */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <a href={PERSON.calUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex flex-col gap-3 p-4 rounded-2xl border border-border bg-muted/30 hover:border-foreground/20 hover:bg-muted/60 transition-all">
+                  <button
+                    onClick={() => setTab(tab === "cal" ? "idle" : "cal")}
+                    className={`flex flex-col gap-3 p-4 rounded-2xl border text-left transition-all ${
+                      tab === "cal" ? "border-foreground/30 bg-muted/60" : "border-border bg-muted/30 hover:border-foreground/20 hover:bg-muted/60"
+                    }`}>
                     <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
                       <Calendar size={17} className="text-foreground/60" />
                     </div>
@@ -79,7 +91,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       <p className="font-semibold text-foreground text-sm">Book a Call</p>
                       <p className="text-xs text-foreground/40 mt-0.5">Schedule a 30-min chat</p>
                     </div>
-                  </a>
+                  </button>
 
                   <a href={`mailto:${PERSON.email}`}
                     className="flex flex-col gap-3 p-4 rounded-2xl border border-border bg-muted/30 hover:border-foreground/20 hover:bg-muted/60 transition-all">
@@ -93,8 +105,28 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   </a>
                 </div>
 
+                {/* Cal embed */}
+                <AnimatePresence>
+                  {tab === "cal" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden mb-4"
+                    >
+                      <Cal
+                        namespace="30min"
+                        calLink="sohamchatterjee/30min"
+                        style={{ width: "100%", height: "400px", overflow: "scroll" }}
+                        config={{ layout: "month_view" }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Message form toggle */}
-                <button onClick={() => setTab(tab === "message" ? "book" : "message")}
+                <button onClick={() => setTab(tab === "message" ? "idle" : "message")}
                   className="w-full flex items-center gap-3 p-4 rounded-2xl border border-dashed border-border hover:border-foreground/20 transition-all cursor-pointer mb-4">
                   <Send size={15} className="text-foreground/40" />
                   <span className="text-sm text-foreground/50">

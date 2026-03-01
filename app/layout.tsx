@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { GlobalModal } from "@/components/common/GlobalModal";
 import "./globals.css";
 import { Providers } from "./providers";
+import { CmdK } from "@/components/common/CmdK";
 
 export const metadata: Metadata = {
   title: {
@@ -114,6 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main>{children}</main>
               <Footer />
               <GlobalModal />
+              <CmdK />    
             </SmoothScroll>
           </div>
         </ThemeProvider>

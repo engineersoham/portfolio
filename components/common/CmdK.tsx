@@ -9,6 +9,8 @@ import {
   Linkedin, Twitter, ArrowRight, Search, Hash
 } from "lucide-react";
 import { useContactStore } from "@/lib/store";
+import { PERSON, SOCIALS } from "@/lib/constans";
+
 
 type Item = {
   id: string;
@@ -38,19 +40,21 @@ export function CmdK() {
   const items: Item[] = [
     // Navigation
     { id: "home", label: "Home", subtitle: "Back to start", icon: <Home size={15} />, category: "Navigate", action: () => { router.push("/"); close(); }, keywords: ["home", "start"] },
-    { id: "about", label: "About", subtitle: "Who is Soham?", icon: <User size={15} />, category: "Navigate", action: () => { router.push("/about"); close(); }, keywords: ["about", "bio", "me"] },
+    { id: "about", label: "About", subtitle: `Who is ${PERSON.firstName}?`, icon: <User size={15} />, category: "Navigate", action: () => { router.push("/about"); close(); }, keywords: ["about", "bio", "me"] },
     { id: "work", label: "Work / Projects", subtitle: "Things I've built", icon: <Briefcase size={15} />, category: "Navigate", action: () => { router.push("/projects"); close(); }, keywords: ["work", "projects", "portfolio"] },
     { id: "blog", label: "Blog", subtitle: "Thoughts & writing", icon: <BookOpen size={15} />, category: "Navigate", action: () => { router.push("/blog"); close(); }, keywords: ["blog", "articles", "posts"] },
     { id: "uses", label: "Uses", subtitle: "My tools & setup", icon: <Wrench size={15} />, category: "Navigate", action: () => { router.push("/uses"); close(); }, keywords: ["uses", "tools", "setup", "gear"] },
     { id: "guestbook", label: "Guestbook", subtitle: "Leave a message", icon: <NotebookPen size={15} />, category: "Navigate", action: () => { router.push("/guestbook"); close(); }, keywords: ["guestbook", "message", "sign"] },
     // Actions
     { id: "contact", label: "Book a Call", subtitle: "Schedule 30 mins", icon: <Calendar size={15} />, category: "Actions", action: () => { openContact(); close(); }, keywords: ["book", "call", "schedule", "hire", "contact"] },
-    { id: "email", label: "Copy Email", subtitle: "hello@soham.codes", icon: copied ? <Check size={15} /> : <Copy size={15} />, category: "Actions", action: () => { navigator.clipboard.writeText("hello@soham.codes"); setCopied(true); setTimeout(() => setCopied(false), 2000); }, keywords: ["email", "copy", "mail"] },
+    { id: "email", label: "Copy Email", subtitle: PERSON.email, icon: copied ? <Check size={15} /> : <Copy size={15} />, category: "Actions", action: () => { navigator.clipboard.writeText(PERSON.email); setCopied(true); setTimeout(() => setCopied(false), 2000); }, keywords: ["email", "copy", "mail"] },
     { id: "contact-page", label: "Contact Page", subtitle: "Send a message", icon: <Mail size={15} />, category: "Actions", action: () => { router.push("/contact"); close(); }, keywords: ["contact", "message", "email"] },
     // Social
-    { id: "github", label: "GitHub", subtitle: "github.com/sohamchatterjee", icon: <Github size={15} />, category: "Social", action: () => { window.open("https://github.com/sohamchatterjee", "_blank"); close(); }, keywords: ["github", "code", "repos"] },
-    { id: "linkedin", label: "LinkedIn", subtitle: "Connect professionally", icon: <Linkedin size={15} />, category: "Social", action: () => { window.open("https://linkedin.com/in/sohamchatterjee", "_blank"); close(); }, keywords: ["linkedin", "connect"] },
-    { id: "twitter", label: "Twitter / X", subtitle: "@sohamchatterjee", icon: <Twitter size={15} />, category: "Social", action: () => { window.open("https://x.com/sohamchatterjee", "_blank"); close(); }, keywords: ["twitter", "x", "tweet"] },
+    { id: "github", label: "GitHub", subtitle: SOCIALS.github.replace("https://", ""), icon: <Github size={15} />, category: "Social", action: () => { window.open(SOCIALS.github, "_blank"); close(); }, keywords: ["github", "code", "repos"] },
+    { id: "linkedin", label: "LinkedIn", subtitle: "Connect professionally", icon: <Linkedin size={15} />, category: "Social", action: () => { window.open(SOCIALS.linkedin, "_blank"); close(); }, keywords: ["linkedin", "connect"] },
+    { id: "twitter", label: "Twitter / X", subtitle: SOCIALS.twitter.replace("https://x.com/", "@"), icon: <Twitter size={15} />, category: "Social", action: () => { window.open(SOCIALS.twitter, "_blank"); close(); }, keywords: ["twitter", "x", "tweet"] },
+
+    
   ];
 
   const filtered = query.trim() === ""

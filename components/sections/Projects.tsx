@@ -4,9 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Github, ExternalLink, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { projects } from "@/data/projects";
+import { useProjects } from "@/lib/queries/projects";
 import { cn } from "@/lib/utils";
-import type { Project } from "@/types";
 
 const typeColors: Record<string, string> = {
   "Web App": "bg-foreground/10 text-foreground/60",
@@ -15,7 +14,7 @@ const typeColors: Record<string, string> = {
   "Open Source": "bg-foreground/10 text-foreground/60",
 };
 
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+function ProjectCard({ project, index }: { project: any; index: number }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -35,9 +34,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
       {/* Image area */}
       <div className="relative h-52 bg-muted/30 overflow-hidden">
-        {project.images && project.images.length > 0 ? (
+        {project.image ? (
           <img
-            src={project.images[0]}
+            src={project.image}
             alt={project.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -90,10 +89,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       {/* Content */}
       <div className="p-6">
         <div className="flex items-center justify-between mb-3">
-          <span className={cn("text-xs px-2.5 py-1 rounded-full font-medium", typeColors[project.type])}>
-            {project.type}
-          </span>
-          <span className="text-xs text-foreground/30 font-mono">{project.year}</span>
+          {project.featured && (
+            <span className={cn("text-xs px-2.5 py-1 rounded-full font-medium", "bg-yellow-500/10 text-yellow-500")}>
+              Featured
+            </span>
+          )}
         </div>
 
         <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-foreground transition-colors">
@@ -106,11 +106,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
         {/* Tech stack */}
         <div className="flex flex-wrap gap-1.5">
-          {project.techStack.slice(0, 4).map((tech) => (
-            <span
-              key={tech}
-              className="text-xs px-2 py-0.5 rounded-md bg-muted text-foreground/50"
-            >
+          {project.techStack.slice(0, 4).map((tech: string) => (
+            <span key={tech} className="text-xs px-2 py-0.5 rounded-md bg-muted text-foreground/50">
               {tech}
             </span>
           ))}
@@ -126,6 +123,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 }
 
 export function Projects() {
+  const { data, isLoading } = useProjects();
+  const projects = data?.data ?? [];
+
   return (
     <section className="py-20 px-6 max-w-6xl mx-auto">
 
@@ -145,21 +145,30 @@ export function Projects() {
             Curated Work
           </h2>
         </div>
-        <Link
-          href="/projects"
-          className="hidden md:flex items-center gap-2 text-sm text-foreground/50 hover:text-foreground transition-colors"
-        >
-          See all projects
-          <ArrowRight size={16} />
+        <Link href="/projects"
+          className="hidden md:flex items-center gap-2 text-sm text-foreground/50 hover:text-foreground transition-colors">
+          See all projects <ArrowRight size={16} />
         </Link>
       </motion.div>
 
       {/* Projects grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {projects.map((project, index) => (
-          <ProjectCard key={project.id} project={project} index={index} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1,2,3].map((i) => (
+            <div key={i} className="h-80 rounded-3xl border border-border bg-card/20 animate-pulse" />
+          ))}
+        </div>
+      ) : projects.length === 0 ? (
+        <div className="text-center py-20 text-foreground/30 text-sm">
+          No projects yet. Add some from the admin panel.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {projects.map((project: any, index: number) => (
+            <ProjectCard key={project._id} project={project} index={index} />
+          ))}
+        </div>
+      )}
 
       {/* Mobile see all */}
       <motion.div
@@ -168,12 +177,9 @@ export function Projects() {
         viewport={{ once: true }}
         className="flex justify-center mt-8 md:hidden"
       >
-        <Link
-          href="/projects"
-          className="flex items-center gap-2 px-6 py-3 rounded-full border border-border text-sm text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-all"
-        >
-          See all projects
-          <ArrowRight size={16} />
+        <Link href="/projects"
+          className="flex items-center gap-2 px-6 py-3 rounded-full border border-border text-sm text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-all">
+          See all projects <ArrowRight size={16} />
         </Link>
       </motion.div>
 
